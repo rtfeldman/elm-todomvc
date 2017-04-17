@@ -45,9 +45,9 @@ updateWithStorage msg model =
         ( newModel, cmds ) =
             update msg model
     in
-        ( newModel
-        , Cmd.batch [ setStorage newModel, cmds ]
-        )
+    ( newModel
+    , Cmd.batch [ setStorage newModel, cmds ]
+    )
 
 
 
@@ -150,8 +150,8 @@ update msg model =
                 focus =
                     Dom.focus ("todo-" ++ toString id)
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! [ Task.attempt (\_ -> NoOp) focus ]
+            { model | entries = List.map updateEntry model.entries }
+                ! [ Task.attempt (\_ -> NoOp) focus ]
 
         UpdateEntry id task ->
             let
@@ -161,8 +161,8 @@ update msg model =
                     else
                         t
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! []
+            { model | entries = List.map updateEntry model.entries }
+                ! []
 
         Delete id ->
             { model | entries = List.filter (\t -> t.id /= id) model.entries }
@@ -180,16 +180,16 @@ update msg model =
                     else
                         t
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! []
+            { model | entries = List.map updateEntry model.entries }
+                ! []
 
         CheckAll isCompleted ->
             let
                 updateEntry t =
                     { t | completed = isCompleted }
             in
-                { model | entries = List.map updateEntry model.entries }
-                    ! []
+            { model | entries = List.map updateEntry model.entries }
+                ! []
 
         ChangeVisibility visibility ->
             { model | visibility = visibility }
@@ -243,7 +243,7 @@ onEnter msg =
             else
                 Json.fail "not ENTER"
     in
-        on "keydown" (Json.andThen isEnter keyCode)
+    on "keydown" (Json.andThen isEnter keyCode)
 
 
 
@@ -273,24 +273,24 @@ viewEntries visibility entries =
             else
                 "visible"
     in
-        section
-            [ class "main"
-            , style [ ( "visibility", cssVisibility ) ]
+    section
+        [ class "main"
+        , style [ ( "visibility", cssVisibility ) ]
+        ]
+        [ input
+            [ class "toggle-all"
+            , type_ "checkbox"
+            , name "toggle"
+            , checked allCompleted
+            , onClick (CheckAll (not allCompleted))
             ]
-            [ input
-                [ class "toggle-all"
-                , type_ "checkbox"
-                , name "toggle"
-                , checked allCompleted
-                , onClick (CheckAll (not allCompleted))
-                ]
-                []
-            , label
-                [ for "toggle-all" ]
-                [ text "Mark all as complete" ]
-            , Keyed.ul [ class "todo-list" ] <|
-                List.map viewKeyedEntry (List.filter isVisible entries)
-            ]
+            []
+        , label
+            [ for "toggle-all" ]
+            [ text "Mark all as complete" ]
+        , Keyed.ul [ class "todo-list" ] <|
+            List.map viewKeyedEntry (List.filter isVisible entries)
+        ]
 
 
 
@@ -350,14 +350,14 @@ viewControls visibility entries =
         entriesLeft =
             List.length entries - entriesCompleted
     in
-        footer
-            [ class "footer"
-            , hidden (List.isEmpty entries)
-            ]
-            [ lazy viewControlsCount entriesLeft
-            , lazy viewControlsFilters visibility
-            , lazy viewControlsClear entriesCompleted
-            ]
+    footer
+        [ class "footer"
+        , hidden (List.isEmpty entries)
+        ]
+        [ lazy viewControlsCount entriesLeft
+        , lazy viewControlsFilters visibility
+        , lazy viewControlsClear entriesCompleted
+        ]
 
 
 viewControlsCount : Int -> Html Msg
@@ -369,11 +369,11 @@ viewControlsCount entriesLeft =
             else
                 " items"
     in
-        span
-            [ class "todo-count" ]
-            [ strong [] [ text (toString entriesLeft) ]
-            , text (item_ ++ " left")
-            ]
+    span
+        [ class "todo-count" ]
+        [ strong [] [ text (toString entriesLeft) ]
+        , text (item_ ++ " left")
+        ]
 
 
 viewControlsFilters : String -> Html Msg
