@@ -44,7 +44,7 @@ updateWithStorage msg model =
     let
         ( newModel, cmds ) =
             update msg model
-    in
+
     ( newModel
     , Cmd.batch [ setStorage newModel, cmds ]
     )
@@ -149,7 +149,7 @@ update msg model =
 
                 focus =
                     Dom.focus ("todo-" ++ toString id)
-            in
+
             { model | entries = List.map updateEntry model.entries }
                 ! [ Task.attempt (\_ -> NoOp) focus ]
 
@@ -160,7 +160,7 @@ update msg model =
                         { t | description = task }
                     else
                         t
-            in
+
             { model | entries = List.map updateEntry model.entries }
                 ! []
 
@@ -179,7 +179,7 @@ update msg model =
                         { t | completed = isCompleted }
                     else
                         t
-            in
+
             { model | entries = List.map updateEntry model.entries }
                 ! []
 
@@ -187,7 +187,7 @@ update msg model =
             let
                 updateEntry t =
                     { t | completed = isCompleted }
-            in
+
             { model | entries = List.map updateEntry model.entries }
                 ! []
 
@@ -242,7 +242,7 @@ onEnter msg =
                 Json.succeed msg
             else
                 Json.fail "not ENTER"
-    in
+
     on "keydown" (Json.andThen isEnter keyCode)
 
 
@@ -272,7 +272,7 @@ viewEntries visibility entries =
                 "hidden"
             else
                 "visible"
-    in
+
     section
         [ class "main"
         , style [ ( "visibility", cssVisibility ) ]
@@ -349,7 +349,7 @@ viewControls visibility entries =
 
         entriesLeft =
             List.length entries - entriesCompleted
-    in
+
     footer
         [ class "footer"
         , hidden (List.isEmpty entries)
@@ -368,7 +368,7 @@ viewControlsCount entriesLeft =
                 " item"
             else
                 " items"
-    in
+
     span
         [ class "todo-count" ]
         [ strong [] [ text (toString entriesLeft) ]
