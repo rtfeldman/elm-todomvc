@@ -41,12 +41,13 @@ command for every step of the update function.
 -}
 updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
 updateWithStorage msg model =
-    let ( newModel, cmds ) =
-        update msg model
-
     ( newModel
     , Cmd.batch [ setStorage newModel, cmds ]
     )
+    where
+        ( newModel, cmds ) =
+            update msg model
+
 
 
 
@@ -139,27 +140,29 @@ update msg model =
                 ! []
 
         EditingEntry id isEditing ->
-            let updateEntry t =
-                if t.id == id then
-                    { t | editing = isEditing }
-                else
-                    t
-
-            let focus =
-                Dom.focus ("todo-" ++ toString id)
-
             { model | entries = List.map updateEntry model.entries }
                 ! [ Task.attempt (\_ -> NoOp) focus ]
+            where
+                updateEntry t =
+                    if t.id == id then
+                        { t | editing = isEditing }
+                    else
+                        t
+
+                focus =
+                    Dom.focus ("todo-" ++ toString id)
+
 
         UpdateEntry id task ->
-            let updateEntry t =
-               if t.id == id then
-                    { t | description = task }
-                else
-                    t
-
             { model | entries = List.map updateEntry model.entries }
                 ! []
+            where
+                updateEntry t =
+                   if t.id == id then
+                        { t | description = task }
+                    else
+                        t
+
 
         Delete id ->
             { model | entries = List.filter (\t -> t.id /= id) model.entries }
@@ -170,21 +173,23 @@ update msg model =
                 ! []
 
         Check id isCompleted ->
-            let updateEntry t =
-                if t.id == id then
-                    { t | completed = isCompleted }
-                else
-                        t
-
             { model | entries = List.map updateEntry model.entries }
                 ! []
+            where
+                updateEntry t =
+                    if t.id == id then
+                        { t | completed = isCompleted }
+                    else
+                            t
+
 
         CheckAll isCompleted ->
-            let updateEntry t =
-                { t | completed = isCompleted }
-
             { model | entries = List.map updateEntry model.entries }
                 ! []
+            where
+                updateEntry t =
+                    { t | completed = isCompleted }
+
 
         ChangeVisibility visibility ->
             { model | visibility = visibility }
@@ -231,13 +236,14 @@ viewInput task =
 
 onEnter : Msg -> Attribute Msg
 onEnter msg =
-    let isEnter code =
-        if code == 13 then
-            Json.succeed msg
-        else
-            Json.fail "not ENTER"
-
     on "keydown" (Json.andThen isEnter keyCode)
+    where
+        isEnter code =
+            if code == 13 then
+                Json.succeed msg
+            else
+                Json.fail "not ENTER"
+
 
 
 
@@ -246,26 +252,6 @@ onEnter msg =
 
 viewEntries : String -> List Entry -> Html Msg
 viewEntries visibility entries =
-    let isVisible todo =
-        case visibility of
-            "Completed" ->
-                todo.completed
-
-            "Active" ->
-                not todo.completed
-
-            _ ->
-                True
-
-    let allCompleted =
-        List.all .completed entries
-
-    let cssVisibility =
-        if List.isEmpty entries then
-            "hidden"
-        else
-            "visible"
-
     section
         [ class "main"
         , style [ ( "visibility", cssVisibility ) ]
@@ -284,6 +270,27 @@ viewEntries visibility entries =
         , Keyed.ul [ class "todo-list" ] <|
             List.map viewKeyedEntry (List.filter isVisible entries)
         ]
+    where
+        isVisible todo =
+            case visibility of
+                "Completed" ->
+                    todo.completed
+
+            "Active" ->
+                not todo.completed
+
+            _ ->
+                True
+
+        allCompleted =
+            List.all .completed entries
+
+        cssVisibility =
+            if List.isEmpty entries then
+                "hidden"
+            else
+                "visible"
+
 
 
 
@@ -336,12 +343,6 @@ viewEntry todo =
 
 viewControls : String -> List Entry -> Html Msg
 viewControls visibility entries =
-    let entriesCompleted =
-        List.length (List.filter .completed entries)
-
-    let entriesLeft =
-        List.length entries - entriesCompleted
-
     footer
         [ class "footer"
         , hidden (List.isEmpty entries)
@@ -351,20 +352,29 @@ viewControls visibility entries =
         , lazy viewControlsClear entriesCompleted
         ]
 
+    where
+        entriesCompleted =
+            List.length (List.filter .completed entries)
+
+        entriesLeft =
+            List.length entries - entriesCompleted
+
+
 
 viewControlsCount : Int -> Html Msg
 viewControlsCount entriesLeft =
-    let item_ =
-        if entriesLeft == 1 then
-            " item"
-        else
-            " items"
-
     span
         [ class "todo-count" ]
         [ strong [] [ text (toString entriesLeft) ]
         , text (item_ ++ " left")
         ]
+    where
+        item_ =
+            if entriesLeft == 1 then
+                " item"
+            else
+                " items"
+
 
 
 viewControlsFilters : String -> Html Msg
