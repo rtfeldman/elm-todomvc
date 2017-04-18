@@ -41,7 +41,7 @@ command for every step of the update function.
 -}
 updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
 updateWithStorage msg model =
-    let
+    scope
         ( newModel, cmds ) =
             update msg model
 
@@ -140,7 +140,7 @@ update msg model =
                 ! []
 
         EditingEntry id isEditing ->
-            let
+            scope
                 updateEntry t =
                     if t.id == id then
                         { t | editing = isEditing }
@@ -154,7 +154,7 @@ update msg model =
                 ! [ Task.attempt (\_ -> NoOp) focus ]
 
         UpdateEntry id task ->
-            let
+            scope
                 updateEntry t =
                     if t.id == id then
                         { t | description = task }
@@ -173,7 +173,7 @@ update msg model =
                 ! []
 
         Check id isCompleted ->
-            let
+            scope
                 updateEntry t =
                     if t.id == id then
                         { t | completed = isCompleted }
@@ -184,7 +184,7 @@ update msg model =
                 ! []
 
         CheckAll isCompleted ->
-            let
+            scope
                 updateEntry t =
                     { t | completed = isCompleted }
 
@@ -236,7 +236,7 @@ viewInput task =
 
 onEnter : Msg -> Attribute Msg
 onEnter msg =
-    let
+    scope
         isEnter code =
             if code == 13 then
                 Json.succeed msg
@@ -252,7 +252,7 @@ onEnter msg =
 
 viewEntries : String -> List Entry -> Html Msg
 viewEntries visibility entries =
-    let
+    scope
         isVisible todo =
             case visibility of
                 "Completed" ->
@@ -343,7 +343,7 @@ viewEntry todo =
 
 viewControls : String -> List Entry -> Html Msg
 viewControls visibility entries =
-    let
+    scope
         entriesCompleted =
             List.length (List.filter .completed entries)
 
@@ -362,7 +362,7 @@ viewControls visibility entries =
 
 viewControlsCount : Int -> Html Msg
 viewControlsCount entriesLeft =
-    let
+    scope
         item_ =
             if entriesLeft == 1 then
                 " item"
